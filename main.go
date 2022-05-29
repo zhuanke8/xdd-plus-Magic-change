@@ -13,8 +13,8 @@ import (
 	"github.com/beego/beego/v2/server/web/context"
 
 	"github.com/beego/beego/v2/server/web"
-	"github.com/xiaeroc/xdd/controllers"
-	"github.com/xiaeroc/xdd/models"
+	"github.com/zhuanke8/xdd-plus-Magic-change/controllers"
+	"github.com/zhuanke8/xdd-plus-Magic-change/models"
 )
 
 var theme = ""
@@ -28,7 +28,7 @@ func main() {
 	})
 	web.Get("/", func(ctx *context.Context) {
 		if models.Config.Theme == "" {
-			models.Config.Theme = models.GhProxy + "https://raw.githubusercontent.com/xiaeroc/xdd/master/myTheme/kuduan.html"
+			models.Config.Theme = models.GhProxy + "https://raw.githubusercontent.com/zhuanke8/xdd-plus-Magic-change/master/myTheme/kuduan.html"
 		}
 		if theme != "" {
 			ctx.WriteString(theme)

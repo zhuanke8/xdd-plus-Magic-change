@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/beego/beego/v2/client/httplib"
 	"strings"
@@ -51,27 +50,10 @@ func Dyj_tx(tx Dyjtx, sender *Sender) {
 	sender.Reply(str)
 }
 
-type JCommandDate struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-	Data struct {
-		Img      string `json:"img"`
-		HeadImg  string `json:"headImg"`
-		Title    string `json:"title"`
-		UserName string `json:"userName"`
-		JumpUrl  string `json:"jumpUrl"`
-	} `json:"data"`
-}
-
 func JCommand(code string) string {
-	req := httplib.Post(fmt.Sprintf(`https://api.jds.codes/jd/jcommand`))
+	req := httplib.Post(fmt.Sprintf(`https://api.jds.codes/jCommand`))
 	req.Header("content-type", "application/json")
 	req.Body(fmt.Sprintf(`{"code":"%s"}`, code))
-	data, err := req.Bytes()
-	jCommandDate := JCommandDate{}
-	err = json.Unmarshal(data, &jCommandDate)
-	if err == nil && jCommandDate.Code == 200 {
-		return fmt.Sprintf("活动: %s \n 用户: %s \n 地址: %s ", jCommandDate.Data.Title, jCommandDate.Data.UserName, jCommandDate.Data.JumpUrl)
-	}
-	return ""
+	data, _ := req.String()
+	return data
 }

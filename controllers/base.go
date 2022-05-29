@@ -9,7 +9,7 @@ import (
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
-	"github.com/xiaeroc/xdd/models"
+	"github.com/zhuanke8/xdd-plus-Magic-change/models"
 	"gopkg.in/go-playground/validator.v9"
 	zh_translations "gopkg.in/go-playground/validator.v9/translations/zh"
 )

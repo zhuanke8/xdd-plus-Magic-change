@@ -51,7 +51,7 @@ func InitReplies() {
 		}
 	}
 	if _, ok := replies["壁纸"]; !ok {
-		replies["壁纸"] = "https://acg.toubiec.cn/random.php"
+		replies["壁纸"] = "https://laosepi.org/gqpic.php"
 	}
 }
 
@@ -76,11 +76,6 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	if sender.UserID == Config.TelegramUserID || sender.UserID == int(Config.QQID) {
 		sender.IsAdmin = true
 	}
-	if sender.IsAdmin == false {
-		if IsUserAdmin(strconv.Itoa(sender.UserID)) {
-			sender.IsAdmin = true
-		}
-	}
 	for i := range codeSignals {
 		for j := range codeSignals[i].Command {
 			if codeSignals[i].Command[j] == head {
@@ -98,6 +93,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		{
 			ss := regexp.MustCompile(`^(\d{11})$`).FindStringSubmatch(msg)
 			if len(ss) > 0 {
+				if Config.JDCAddress == "" {
+					return "未配置JDC"
+				}
 				if num := 5; len(codes) >= num {
 					return fmt.Sprintf("%v坑位全部在使用中，请排队。", num)
 				}
@@ -113,43 +111,15 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					phone := ss[0]
 					logs.Info(phone)
 					sender.Reply("请稍后，正在模拟环境...")
-					quick := SendSMS(sender, phone)
+					JdcSendSMS(sender, phone)
 					sms_code := ""
 					select {
 					case sms_code = <-c:
 						sender.Reply("正在提交验证码...")
-						smsCk := VerifyCode(phone, sms_code, quick)
-						if smsCk.ErrCode == 0 {
-							ck := JdCookie{
-								PtKey: smsCk.Data.PtKey,
-								PtPin: smsCk.Data.PtPin,
-								Hack:  False,
-								QQ:    sender.UserID,
-							}
-							if CookieOK(&ck) {
-								if sender.IsQQ() {
-									ck.QQ = sender.UserID
-								} else if sender.IsTG() {
-									ck.Telegram = sender.UserID
-								}
-								if nck, err := GetJdCookie(ck.PtPin); err == nil {
-									if nck.QQ == 0 {
-										nck.InPoolQQ(ck.PtKey, sender.UserID)
-									} else {
-										nck.InPool(ck.PtKey)
-									}
-									sender.Reply(fmt.Sprintf("更新账号，%s", ck.PtPin))
-								} else {
-									if Cdle {
-										ck.Hack = True
-									}
-									NewJdCookie(&ck)
-									sender.Reply(fmt.Sprintf("添加账号，%s", ck.PtPin))
-								}
-								for i := range Config.Containers {
-									(&Config.Containers[i]).Write([]JdCookie{ck})
-								}
-							}
+						code := JdcVerifyCode(phone, sms_code, fmt.Sprintf("%d", sender.UserID))
+						if code {
+							//cookie, _ := GetJdCookie(code)
+							//cookie.Update(QQ, sender.UserID)
 							sender.Reply("登录成功...")
 						} else {
 							sender.Reply("登录失败...")
@@ -182,11 +152,13 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			if len(ss) > 0 {
 				if !sender.IsAdmin {
 					coin := GetCoin(sender.UserID)
-					if coin < 88 {
-						return "推一推需要88个许愿币。"
+					if coin < Config.Tyt {
+						return fmt.Sprintf("推一推需要%d个许愿币", Config.Tyt)
 					}
-					RemCoin(sender.UserID, 88)
-					sender.Reply("推一推即将开始，已扣除88个许愿币。")
+					RemCoin(sender.UserID, Config.Tyt)
+					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个许愿币", Config.Tyt))
+				} else {
+					sender.Reply(fmt.Sprintf("推一推即将开始，已扣除%d个许愿币，管理员通道", Config.Tyt))
 				}
 				runTask(&Task{Path: "jd_tyt.js", Envs: []Env{
 					{Name: "actId", Value: ss[1]},
@@ -200,22 +172,24 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 			if len(ss) > 6 {
 				if !sender.IsAdmin {
 					coin := GetCoin(sender.UserID)
-					if coin < 188 {
-						return "发财挖宝需要88个许愿币。"
+					if coin < Config.wb {
+						return fmt.Sprintf("发财挖宝需要%d个许愿币", Config.wb)
 					}
-					RemCoin(sender.UserID, 188)
-					sender.Reply("发财挖宝即将开始，已扣除88个许愿币。")
+					RemCoin(sender.UserID, Config.wb)
+					sender.Reply(fmt.Sprintf("发财挖宝即将开始，已扣除%d个许愿币", Config.wb))
+				} else {
+					sender.Reply(fmt.Sprintf("发财挖宝即将开始，已扣除%d个许愿币，管理员通道", Config.wb))
 				}
-				wbhelp := GetEnv("wbhelp")
-				if wbhelp == "" {
-					wbhelp = "0"
+				wbHelp := GetEnv("wbHelp")
+				if wbHelp == "" {
+					wbHelp = "0"
 				}
-				wbhelpMax := GetEnv("wbhelpMax")
-				if wbhelpMax == "" {
-					wbhelpMax = "30"
+				wbHelpMax := GetEnv("wbHelpMax")
+				if wbHelpMax == "" {
+					wbHelpMax = "60"
 				}
-				runTask(&Task{Path: "jd_fcwb.js", Envs: []Env{
-					{Name: "activityId", Value: ss[1]}, {Name: "inviterId", Value: ss[3]}, {Name: "inviteCode", Value: ss[5]}, {Name: "wbhelpMax", Value: wbhelpMax}, {Name: "wbhelp", Value: wbhelp},
+				runTask(&Task{Path: "jd_wb.js", Envs: []Env{
+					{Name: "activityId", Value: ss[1]}, {Name: "inviter", Value: ss[3]}, {Name: "inviteCode", Value: ss[5]}, {Name: "helpMax", Value: wbHelpMax}, {Name: "wbHelp", Value: wbHelp},
 				}}, sender)
 				return nil
 			}

@@ -7,7 +7,7 @@ import (
 	"github.com/beego/beego/v2/client/httplib"
 	"github.com/beego/beego/v2/core/logs"
 	qrcode "github.com/skip2/go-qrcode"
-	"github.com/xiaeroc/xdd/models"
+	"github.com/zhuanke8/xdd-plus-Magic-change/models"
 	"io/ioutil"
 	"regexp"
 	"strconv"

@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/xiaeroc/xdd/models"
+	"github.com/zhuanke8/xdd-plus-Magic-change/models"
 )
 
 type AccountController struct {

@@ -50,7 +50,7 @@ if ($.isNode()) {
             $.index = i + 1;
             $.isLogin = true;
             $.nickName = '';
-            console.log(`\n******开始【京东账号${$.index}】${$.nickName || $.UserName}*********\n`);
+            //   console.log(`\n******开始【京东账号${$.index}】${$.nickName || $.UserName}*********\n`);
             await main()
             if (count >= helpMax) {
                 break
@@ -97,16 +97,16 @@ function gambleHomePage() {
         $.get(options, (err, resp, data) => {
             try {
                 if (err) {
-                    console.log(`${JSON.stringify(err)}`)
-                    console.log(`${$.name} API请求失败，请检查网路重试`)
+                    //   console.log(`${JSON.stringify(err)}`)
+                    //   console.log(`${$.name} API请求失败，请检查网路重试`)
                 } else {
                     if (data) {
                         data = JSON.parse(data);
                         if (data['code'] === 0) {
-                            console.log(`${JSON.stringify(data)}`);
+                            //   console.log(`${JSON.stringify(data)}`);
                             count++;
                         } else {
-                            console.log(`${JSON.stringify(data)}`);
+                            //   console.log(`${JSON.stringify(data)}`);
                         }
                     }
                 }

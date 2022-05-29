@@ -34,6 +34,9 @@ type Yaml struct {
 	QbotPublicMode      bool   `yaml:"qbot_public_mode"`
 	DailyAssetPushCron  string `yaml:"daily_asset_push_cron"`
 	Version             string `yaml:"version"`
+	Tyt                 int    `yaml:"Tyt"`
+	wb                  int    `yaml:"wb"`
+	
 	Node                string
 	Npm                 string
 	Python              string
@@ -72,7 +75,7 @@ func initConfig() {
 		s, _ := ioutil.ReadAll(f)
 		if len(s) == 0 {
 			logs.Info("下载配置%s", name)
-			r, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/xiaeroc/xdd/master/conf/demo_" + name).Response()
+			r, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/zhuanke8/xdd-plus-Magic-change/master/conf/demo_" + name).Response()
 			if err == nil {
 				io.Copy(f, r.Body)
 			}
@@ -92,6 +95,9 @@ func initConfig() {
 	if Config.Master == "" {
 		Config.Master = "xxxx"
 	}
+	if Config.CTime == "" {
+		Config.CTime = "10"
+	}
 	if Config.Mode != Parallel {
 		Config.Mode = Balance
 	}
@@ -100,6 +106,12 @@ func initConfig() {
 	}
 	if Config.NoGhproxy {
 		GhProxy = ""
+	}
+	if Config.Tyt == 0 {
+		Config.Tyt = 8
+	}
+	if Config.wb == 0 {
+		Config.wb = 8
 	}
 	if Config.Database == "" {
 		Config.Database = ExecPath + "/.xdd.db"

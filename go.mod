@@ -1,10 +1,10 @@
-module github.com/xiaeroc/xdd
+module github.com/zhuanke8/xdd-plus-Magic-change
 
 go 1.17
 
 replace github.com/willf/bitset v1.2.0 => github.com/bits-and-blooms/bitset v1.2.0
 
-replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/xiaeroc/go-cqhttp v1.0.0-xiaeroc
+replace github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2 => github.com/zhuanke8/go-cqhttp v1.0.0-zhuanke8
 
 require (
 	github.com/Mrs4s/go-cqhttp v1.0.0-beta8-fix2

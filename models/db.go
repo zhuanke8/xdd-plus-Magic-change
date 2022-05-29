@@ -46,7 +46,6 @@ func initDB() {
 		&TenRead{},
 		&JdCookiePool2{},
 		&Limit{},
-		&UserAdmin{},
 	)
 	keys = make(map[string]bool)
 	pins = make(map[string]bool)
@@ -168,7 +167,6 @@ var ExecPath string
 var Telegram = "Telegram"
 var Hack = "Hack"
 var TenReadCK = "CK"
-var Content = "Content"
 
 const (
 	Fruit        = "Fruit"
